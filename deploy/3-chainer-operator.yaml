@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chainer-operator
+  namespace: chainer-operator
+  labels:
+    app: chainer-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chainer-operator
+  template:
+    metadata:
+      labels:
+        app: chainer-operator
+    spec:
+      serviceAccountName: chainer-operator
+      containers:
+      - name: chainer-operator
+        # TODO: change registry
+        image: everpeace/chainer-operator:latest
+        imagePullPolicy: Always
+        args: [ 
+          "-v", "4",
+          "-stderrthreshold", "INFO"
+        ]
