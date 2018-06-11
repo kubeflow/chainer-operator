@@ -1,0 +1,15 @@
+language: go
+go_import_path: github.com/kubeflow/chainer-operator
+
+go:
+- 1.10.2
+
+before_install:
+- go get -u github.com/golang/dep/cmd/dep
+- dep ensure
+
+install:
+- go get -t -d ./...
+
+script:
+- ./hack/verify-codegen.sh && go test ./...
