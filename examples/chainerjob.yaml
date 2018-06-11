@@ -1,0 +1,15 @@
+apiVersion: kubeflow.org/v1alpha1
+kind: ChainerJob
+metadata:
+  name: example-job
+spec:
+  master:
+    template:
+      spec:
+        containers:
+        - image: everpeace/chainer:4.1.0
+          command:
+          - sh
+          - -c
+          - |
+            python3 /train_mnist.py -e 2 -b 1000 -u 100 --noplot
