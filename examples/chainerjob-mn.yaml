@@ -1,0 +1,31 @@
+apiVersion: kubeflow.org/v1alpha1
+kind: ChainerJob
+metadata:
+  name: example-job-mn
+spec:
+  backend: mpi
+  master:
+    template:
+      spec:
+        containers:
+        - name: chainer
+          image: everpeace/chainermn:1.3.0
+          command:
+          - sh
+          - -c
+          - |
+            mpiexec -n 3 -N 1 --allow-run-as-root --display-map  --mca mpi_cuda_support 0 \
+            python3 /train_mnist.py -e 2 -b 1000 -u 100
+  workerSets:
+    ws0:
+      replicas: 2
+      template:
+        spec:
+          containers:
+          - name: chainer
+            image: everpeace/chainermn:1.3.0
+            command:
+            - sh
+            - -c
+            - |
+              while true; do sleep 1 & wait; done
