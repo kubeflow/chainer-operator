@@ -147,6 +147,8 @@ func TestNewMaster(t *testing.T) {
 		if errActual != nil {
 			t.Errorf("Couldn't pretty format %v, error: %v", actualJob, errActual)
 			actual = fmt.Sprintf("%+v", actualJob)
+		} else {
+			actual = string(actualJSON)
 		}
 
 		expectedJSON, errExpected := json.MarshalIndent(c.expected, "", "  ")
@@ -154,10 +156,9 @@ func TestNewMaster(t *testing.T) {
 		if errExpected != nil {
 			t.Errorf("Couldn't pretty format %v, error: %v", c.expected, errExpected)
 			expected = fmt.Sprintf("%v", c.expected)
+		} else {
+			expected = string(expectedJSON)
 		}
-
-		actual = string(actualJSON)
-		expected = string(expectedJSON)
 
 		if !reflect.DeepEqual(actual, expected) {
 			t.Errorf("TestCase: %v\nWant:%+v\nGot:%+v", c.name, expected, actual)
