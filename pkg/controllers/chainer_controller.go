@@ -33,6 +33,11 @@ import (
 	rbacinformers "k8s.io/client-go/informers/rbac/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
+	appslister "k8s.io/client-go/listers/apps/v1"
+	batchlister "k8s.io/client-go/listers/batch/v1"
+	corelister "k8s.io/client-go/listers/core/v1"
+	rbaclister "k8s.io/client-go/listers/rbac/v1"
+
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
@@ -43,7 +48,6 @@ import (
 	kubeflowScheme "github.com/kubeflow/chainer-operator/pkg/client/clientset/versioned/scheme"
 	informers "github.com/kubeflow/chainer-operator/pkg/client/informers/externalversions/chainer/v1alpha1"
 	listers "github.com/kubeflow/chainer-operator/pkg/client/listers/chainer/v1alpha1"
-	"github.com/kubeflow/chainer-operator/pkg/controllers/backends"
 	"github.com/kubeflow/chainer-operator/pkg/controllers/backends/mpi"
 	"github.com/kubeflow/chainer-operator/pkg/controllers/backends/none"
 )
@@ -58,8 +62,6 @@ const (
 	// event messages
 	messageBackendTypeNotSupported = "backend:%q not supported"
 	messageResourceSynced          = "ChainerJob synced successfully"
-
-	noneBackendKey = "__NONE__"
 )
 
 // ChainerJobController is the controller
@@ -69,11 +71,17 @@ type ChainerJobController struct {
 	// kubeflowClient is a clientset for our own API group.
 	kubeflowClient clientset.Interface
 
+	configMapLister      corelister.ConfigMapLister
 	configMapSynced      cache.InformerSynced
+	serviceAccountLister corelister.ServiceAccountLister
 	serviceAccountSynced cache.InformerSynced
+	roleLister           rbaclister.RoleLister
 	roleSynced           cache.InformerSynced
+	roleBindingLister    rbaclister.RoleBindingLister
 	roleBindingSynced    cache.InformerSynced
+	statefulSetLister    appslister.StatefulSetLister
 	statefulSetSynced    cache.InformerSynced
+	jobLister            batchlister.JobLister
 	jobSynced            cache.InformerSynced
 	chainerJobLister     listers.ChainerJobLister
 	chainerJobSynced     cache.InformerSynced
@@ -88,8 +96,6 @@ type ChainerJobController struct {
 	// recorder is an event recorder for recording Event resources to the
 	// Kubernetes API.
 	recorder record.EventRecorder
-
-	backends map[apisv1alpha1.BackendType]backends.Backend
 }
 
 // NewChainerJobController returns a new ChainerJob controller.
@@ -120,11 +126,17 @@ func NewChainerJobController(
 	controller := &ChainerJobController{
 		kubeClient:           kubeClient,
 		kubeflowClient:       kubeflowClient,
+		configMapLister:      configMapInformer.Lister(),
 		configMapSynced:      configMapInformer.Informer().HasSynced,
+		serviceAccountLister: serviceAccountInformer.Lister(),
 		serviceAccountSynced: serviceAccountInformer.Informer().HasSynced,
+		roleLister:           roleInformer.Lister(),
 		roleSynced:           roleInformer.Informer().HasSynced,
+		roleBindingLister:    roleBindingInformer.Lister(),
 		roleBindingSynced:    roleBindingInformer.Informer().HasSynced,
+		statefulSetLister:    statefulSetInformer.Lister(),
 		statefulSetSynced:    statefulSetInformer.Informer().HasSynced,
+		jobLister:            jobInformer.Lister(),
 		jobSynced:            jobInformer.Informer().HasSynced,
 		chainerJobLister:     chainerJobInformer.Lister(),
 		chainerJobSynced:     chainerJobInformer.Informer().HasSynced,
@@ -133,28 +145,6 @@ func NewChainerJobController(
 			"ChainerJobs",
 		),
 		recorder: recorder,
-		backends: map[apisv1alpha1.BackendType]backends.Backend{
-			apisv1alpha1.BackendTypeMPI: mpi.NewBackend(
-				kubeClient,
-				kubeflowClient,
-				serviceAccountInformer.Lister(),
-				roleInformer.Lister(),
-				roleBindingInformer.Lister(),
-				configMapInformer.Lister(),
-				jobInformer.Lister(),
-				statefulSetInformer.Lister(),
-				recorder,
-			),
-			noneBackendKey: none.NewBackend(
-				kubeClient,
-				kubeflowClient,
-				serviceAccountInformer.Lister(),
-				roleInformer.Lister(),
-				roleBindingInformer.Lister(),
-				jobInformer.Lister(),
-				recorder,
-			),
-		},
 	}
 
 	glog.Info("Setting up event handlers")
@@ -440,18 +430,40 @@ func (c *ChainerJobController) syncHandler(key string) error {
 	}
 
 	scheme.Scheme.Default(chjob)
+
 	if apisv1alpha1.IsDistributed(chjob) {
-		if backend, ok := c.backends[chjob.Spec.Backend]; ok {
+		switch chjob.Spec.Backend {
+		case apisv1alpha1.BackendTypeMPI:
+			backend := mpi.NewBackend(
+				c.kubeClient,
+				c.kubeflowClient,
+				c.serviceAccountLister,
+				c.roleLister,
+				c.roleBindingLister,
+				c.configMapLister,
+				c.jobLister,
+				c.statefulSetLister,
+				c.recorder,
+			)
 			if err := backend.SyncChainerJob(chjob); err != nil {
 				return err
 			}
-		} else {
+		default:
 			msg := fmt.Sprintf(messageBackendTypeNotSupported, chjob.Spec.Backend)
 			c.recorder.Eventf(chjob, corev1.EventTypeWarning, failedSynced, msg)
 			return fmt.Errorf(msg)
 		}
 	} else {
-		if err := c.backends[noneBackendKey].SyncChainerJob(chjob); err != nil {
+		backend := none.NewBackend(
+			c.kubeClient,
+			c.kubeflowClient,
+			c.serviceAccountLister,
+			c.roleLister,
+			c.roleBindingLister,
+			c.jobLister,
+			c.recorder,
+		)
+		if err := backend.SyncChainerJob(chjob); err != nil {
 			return err
 		}
 	}
