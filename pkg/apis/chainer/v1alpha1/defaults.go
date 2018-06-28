@@ -54,9 +54,10 @@ func setWorkerSetMPISlots(spec *WorkerSetSpec, name string) {
 				}
 				spec.MPIConfig = defaultMPIConfig(slots)
 				glog.V(4).Infof("setting spec.WorkerSets[%+v].MPIConfig.Slots to %+v", name, *spec.MPIConfig.Slots)
-				break
+				return
 			}
 		}
+		spec.MPIConfig = defaultMPIConfig(Int32(DefaultSlots))
 	}
 }
 
@@ -84,9 +85,10 @@ func setMasterSpecMPISlots(spec *MasterSpec) {
 				}
 				spec.MPIConfig = defaultMPIConfig(slots)
 				glog.V(4).Infof("setting spec.Master.MPIConfig.Slots to %+v", *spec.MPIConfig.Slots)
-				break
+				return
 			}
 		}
+		spec.MPIConfig = defaultMPIConfig(Int32(DefaultSlots))
 	}
 }
 
