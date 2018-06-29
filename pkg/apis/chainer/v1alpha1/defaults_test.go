@@ -230,7 +230,7 @@ func TestSetDefaults_ChainerJob(t *testing.T) {
 			},
 		},
 		{
-			name: "multiple containers case doensn't set defaults Slots/ContainerName",
+			name: "multiple containers case doensn't set default ContainerName but set default Slots",
 			in: &ChainerJob{
 				Spec: ChainerJobSpec{
 					Backend: BackendTypeMPI,
@@ -270,6 +270,9 @@ func TestSetDefaults_ChainerJob(t *testing.T) {
 				Spec: ChainerJobSpec{
 					Backend: BackendTypeMPI,
 					Master: MasterSpec{
+						MPIConfig: &MPIConfig{
+							Slots: Int32(DefaultSlots),
+						},
 						Template: corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								RestartPolicy: DefaultRestartPolicy,
@@ -286,6 +289,9 @@ func TestSetDefaults_ChainerJob(t *testing.T) {
 					},
 					WorkerSets: map[string]*WorkerSetSpec{
 						"ws": &WorkerSetSpec{
+							MPIConfig: &MPIConfig{
+								Slots: Int32(DefaultSlots),
+							},
 							Replicas: Int32(1),
 							Template: corev1.PodTemplateSpec{
 								Spec: corev1.PodSpec{
