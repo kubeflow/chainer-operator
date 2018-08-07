@@ -74,8 +74,6 @@ tried=0
 until [ "$(wc -l < ${TARGET}_new)" -eq $cluster_size ]; do
 	rm -f ${TARGET}_new
 
-	echo "${MASTER_POD_NAME} ${MASTER_SLOTS}" > ${TARGET}_new
-
 	cat ${STATEFUL_SETS_AND_SLOTS_FILE} | while read ss_s; do
 		ss=$(echo "${ss_s}" | cut -d' ' -f 1)
 		slots=$(echo "${ss_s}" | cut -d' ' -f 2)
@@ -88,6 +86,8 @@ until [ "$(wc -l < ${TARGET}_new)" -eq $cluster_size ]; do
 			fi
 		done
 	done
+	
+	echo "${MASTER_POD_NAME} ${MASTER_SLOTS}" >> ${TARGET}_new
 
 	tried=$(expr $tried + 1)
 	if [ $tried -ge $MAX_TRY ]; then
