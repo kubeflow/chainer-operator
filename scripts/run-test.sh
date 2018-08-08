@@ -25,35 +25,27 @@ set -o pipefail
 CLUSTER_NAME="${CLUSTER_NAME}"
 ZONE="${GCP_ZONE}"
 PROJECT="${GCP_PROJECT}"
-NAMESPACE="${DEPLOY_NAMESPACE}"
-REGISTRY="${GCP_REGISTRY}"
+K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
+KFCTL_DIR=$(mktemp -d)
+WORK_DIR=$(mktemp -d)
 VERSION=$(git describe --tags --always --dirty)
-APP_NAME=test-app
-KUBEFLOW_VERSION=master
-KF_ENV=chainer
+source `dirname $0`/kfctl-util.sh
 
-echo "Activating service-account"
-gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-echo "Configuring kubectl"
-gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
-    --zone ${ZONE}
+cd ${WORK_DIR}
 
-ACCOUNT=`gcloud config get-value account --quiet`
-echo "Setting account ${ACCOUNT}"
-kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=${ACCOUNT}
+kfctl::intall ${KFCTL_DIR}
+kfctl::init ${KFCTL_DIR} ${CLUSTER_NAME} ${PROJECT}
 
-echo "Install ksonnet app in namespace ${NAMESPACE}"
-ks init ${APP_NAME}
-cd ${APP_NAME}
-ks env add ${KF_ENV}
-ks env set ${KF_ENV} --namespace ${NAMESPACE}
-ks registry add kubeflow github.com/kubeflow/kubeflow/tree/${KUBEFLOW_VERSION}/kubeflow
+cd ${CLUSTER_NAME}
+cat env.sh # for debugging
+kfctl::generate ${KFCTL_DIR} all
+
+cd $(source env.sh; echo ${KUBEFLOW_KS_DIR})
 
 echo "Install the operator"
-ks pkg install kubeflow/chainer-job@${KUBEFLOW_VERSION}
+ks pkg install kubeflow/chainer-job
 ks generate chainer-operator chainer-operator --image=${REGISTRY}/${REPO_NAME}:${VERSION}
-ks apply ${KF_ENV} -c chainer-operator
-
+ks apply default -c chainer-operator
 TIMEOUT=30
 until kubectl get pods -n ${NAMESPACE} | grep chainer-operator | grep 1/1 || [[ $TIMEOUT -eq 1 ]]; do
   sleep 10

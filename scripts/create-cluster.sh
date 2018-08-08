@@ -25,17 +25,18 @@ set -o pipefail
 CLUSTER_NAME="${CLUSTER_NAME}"
 ZONE="${GCP_ZONE}"
 PROJECT="${GCP_PROJECT}"
-NAMESPACE="${DEPLOY_NAMESPACE}"
+K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
+KFCTL_DIR=$(mktemp -d)
+WORK_DIR=$(mktemp -d)
+source `dirname $0`/kfctl-util.sh
 
-echo "Activating service-account"
-gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-echo "Creating GPU cluster"
-gcloud --project ${PROJECT} beta container clusters create ${CLUSTER_NAME} \
-    --zone ${ZONE} \
-    --accelerator type=nvidia-tesla-k80,count=2 \
-    --cluster-version 1.9
-echo "Configuring kubectl"
-gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
-    --zone ${ZONE}
-echo "Create Namespace"
-kubectl create ns ${NAMESPACE}
+cd ${WORK_DIR}
+
+kfctl::intall ${KFCTL_DIR}
+kfctl::init ${KFCTL_DIR} ${CLUSTER_NAME} ${PROJECT}
+
+cd ${CLUSTER_NAME}
+cat env.sh # for debugging
+
+kfctl::generate ${KFCTL_DIR} platform
+kfctl::apply ${KFCTL_DIR} apply

@@ -30,7 +30,9 @@ gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS
 echo "building chainer operator image in gcloud"
 gcloud version
 # gcloud components update -q
+
 # build chainer operator image
+echo "building chainer-operator image in gcloud"
 gcloud container builds submit . --tag=${REGISTRY}/${REPO_NAME}:${VERSION} --project=${PROJECT}
 
 # build a mnist testing image for our smoke test

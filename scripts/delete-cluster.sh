@@ -25,8 +25,18 @@ set -o pipefail
 CLUSTER_NAME="${CLUSTER_NAME}"
 ZONE="${GCP_ZONE}"
 PROJECT="${GCP_PROJECT}"
+K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
+KFCTL_DIR=$(mktemp -d)
+WORK_DIR=$(mktemp -d)
+source `dirname $0`/kfctl-util.sh
 
-echo "Activating service-account"
-gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-echo "Tearing down the cluster"
-gcloud container clusters delete ${CLUSTER_NAME} --zone=${ZONE} --project=${PROJECT}
+cd ${WORK_DIR}
+
+kfctl::intall ${KFCTL_DIR}
+kfctl::init ${KFCTL_DIR} ${CLUSTER_NAME} ${PROJECT}
+
+cd ${CLUSTER_NAME}
+cat env.sh # for debugging
+
+kfctl::generate ${KFCTL_DIR} platform
+kfctl::delete ${KFCTL_DIR} platform
