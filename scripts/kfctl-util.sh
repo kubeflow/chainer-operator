@@ -14,17 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-function kfctl::install(){
-    local kfctl_dir=$1
-    local kubeflow_version=${2:-master}
-
-    echo "Downloading kfctl.sh to ${kfctl_dir}"
-    mkdir -p ${kfctl_dir}
-    cd ${kfctl_dir}
-    curl https://raw.githubusercontent.com/kubeflow/kubeflow/${kubeflow_version}/scripts/download.sh | sh
-    cd -
-}
-
 function kfctl::_simple_exec(){
     local kfctl_dir=$1
     local command=$2

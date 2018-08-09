@@ -74,6 +74,7 @@
       // py scripts to use.
       local k8sPy = srcDir;
       local kubeflowPy = srcRootDir + "/kubeflow/testing/py";
+      local kfctlDir = srcRootDir + "/kubeflow/kubeflow/script";
 
       local project = params.project;
       // GKE cluster to use
@@ -111,6 +112,10 @@
                 // Set the GOPATH
                 name: "GOPATH",
                 value: goDir,
+              },
+              {
+                name: "KFCTL_DIR",
+                value: kfctlDir,
               },
               {
                 name: "CLUSTER_NAME",
@@ -250,7 +255,7 @@
                 ],
                 env: prow_env + [{
                   name: "EXTRA_REPOS",
-                  value: "kubeflow/testing@HEAD",
+                  value: "kubeflow/kubeflow@HEAD,kubeflow/testing@HEAD",
                 }],
                 image: testWorkerImage,
                 volumeMounts: [

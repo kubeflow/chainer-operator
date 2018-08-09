@@ -26,13 +26,12 @@ CLUSTER_NAME="${CLUSTER_NAME}"
 ZONE="${GCP_ZONE}"
 PROJECT="${GCP_PROJECT}"
 K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
-KFCTL_DIR=$(mktemp -d)
+KFCTL_DIR="${KFCTL_DIR}"
 WORK_DIR=$(mktemp -d)
 source `dirname $0`/kfctl-util.sh
 
 cd ${WORK_DIR}
 
-kfctl::intall ${KFCTL_DIR}
 kfctl::init ${KFCTL_DIR} ${CLUSTER_NAME} ${PROJECT}
 
 cd ${CLUSTER_NAME}
