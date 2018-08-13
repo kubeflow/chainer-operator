@@ -74,7 +74,7 @@
       // py scripts to use.
       local k8sPy = srcDir;
       local kubeflowPy = srcRootDir + "/kubeflow/testing/py";
-      local kfctlDir = srcRootDir + "/kubeflow/kubeflow/script";
+      local kfctlDir = srcRootDir + "/kubeflow/kubeflow";
 
       local project = params.project;
       // GKE cluster to use
