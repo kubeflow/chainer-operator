@@ -34,12 +34,3 @@ gcloud version
 # build chainer operator image
 echo "building chainer-operator image in gcloud"
 gcloud container builds submit . --tag=${REGISTRY}/${REPO_NAME}:${VERSION} --project=${PROJECT}
-
-# build a mnist testing image for our smoke test
-echo "building chainer's mnist testing image in gcloud"
-MNIST_TEST_IMAGE="chainer-mnist-test"
-gcloud container builds submit ./examples/docker/chainer/ --tag=${REGISTRY}/${MNIST_TEST_IMAGE}:${VERSION} --project=${PROJECT}
-
-echo "building chainermn's mnist testing image in gcloud"
-MN_MNIST_TEST_IMAGE="chainermn-mnist-test"
-gcloud container builds submit ./examples/docker/chainermn/ --tag=${REGISTRY}/${MN_MNIST_TEST_IMAGE}:${VERSION} --project=${PROJECT}

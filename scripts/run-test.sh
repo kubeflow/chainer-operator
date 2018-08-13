@@ -54,7 +54,7 @@ done
 echo "Run 'ChainerJob' test"
 MNIST_TEST="chainer-mnist-test"
 ks generate chainer-job-simple ${MNIST_TEST} \
-  --image=${REGISTRY}/${MNIST_TEST}:${VERSION} \
+  --image=everpeace/chainer:4.1.0 \
   --gpus=0 \
   --command=python3 \
   --args='/train_mnist.py,-e,2,-b,1000,-u,100,--noplot'
@@ -68,7 +68,7 @@ done
 
 MN_MNIST_TEST_IMAGE="chainermn-mnist-test"
 ks generate chainer-job ${MN_MNIST_TEST_IMAGE} \
-  --image=${REGISTRY}/${MN_MNIST_TEST_IMAGE}:${VERSION} \
+  --image=everpeace/chainermn:1.3.0 \
   --workers=1 \
   --workerSetName=ws \
   --gpus=0 \
