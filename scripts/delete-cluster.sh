@@ -18,8 +18,7 @@
 # argo workflow
 
 
-set -o errexit
-set -o nounset
+set -xe
 set -o pipefail
 
 CLUSTER_NAME="${CLUSTER_NAME}"
