@@ -28,6 +28,9 @@ K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
 KFCTL_DIR="${KFCTL_DIR}"
 WORK_DIR=$(mktemp -d)
 source `dirname $0`/kfctl-util.sh
+source `dirname $0`/gcloud-util.sh
+
+gcloud::auth_activate
 
 cd ${WORK_DIR}
 

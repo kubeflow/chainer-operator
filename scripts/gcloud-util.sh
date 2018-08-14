@@ -14,30 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This shell script is used to build a cluster and create a namespace from our
-# argo workflow
-
-
-set -xe
-set -o pipefail
-
-CLUSTER_NAME="${CLUSTER_NAME}"
-ZONE="${GCP_ZONE}"
-PROJECT="${GCP_PROJECT}"
-K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
-KFCTL_DIR=${KFCTL_DIR}
-WORK_DIR=$(mktemp -d)
-source `dirname $0`/kfctl-util.sh
-source `dirname $0`/gcloud-util.sh
-
-gcloud::auth_activate
-
-cd ${WORK_DIR}
-
-kfctl::init ${KFCTL_DIR} ${CLUSTER_NAME} ${PROJECT}
-
-cd ${CLUSTER_NAME}
-cat env.sh # for debugging
-
-kfctl::generate ${KFCTL_DIR} platform
-kfctl::apply ${KFCTL_DIR} apply
+function gcloud::auth_activate(){
+    echo "Activating service-account"
+    gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+    gcloud version
+    # gcloud components update -q
+}

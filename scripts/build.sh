@@ -24,12 +24,9 @@ export PATH=${GOPATH}/bin:/usr/local/go/bin:${PATH}
 REGISTRY="${GCP_REGISTRY}"
 PROJECT="${GCP_PROJECT}"
 VERSION=$(git describe --tags --always --dirty)
+source `dirname $0`/gcloud-util.sh
 
-echo "Activating service-account"
-gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-echo "building chainer operator image in gcloud"
-gcloud version
-# gcloud components update -q
+gcloud::auth_activate
 
 # build chainer operator image
 echo "building chainer-operator image in gcloud"

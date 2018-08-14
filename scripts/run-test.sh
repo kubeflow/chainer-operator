@@ -29,6 +29,9 @@ KFCTL_DIR="${KFCTL_DIR}"
 WORK_DIR=$(mktemp -d)
 VERSION=$(git describe --tags --always --dirty)
 source `dirname $0`/kfctl-util.sh
+source `dirname $0`/gcloud-util.sh
+
+gcloud::auth_activate
 
 cd ${WORK_DIR}
 
