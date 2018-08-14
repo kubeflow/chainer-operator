@@ -41,5 +41,5 @@ cat env.sh # for debugging
 
 export CLIENT_ID=dummy
 export CLIENT_SECRET=dummy
-kfctl::generate ${KFCTL_DIR} platform
-kfctl::delete ${KFCTL_DIR} platform
+kfctl::generate ${KFCTL_DIR} all
+kfctl::delete ${KFCTL_DIR} all
