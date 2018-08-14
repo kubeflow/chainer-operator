@@ -25,6 +25,7 @@ CLUSTER_NAME="${CLUSTER_NAME}"
 ZONE="${GCP_ZONE}"
 PROJECT="${GCP_PROJECT}"
 K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
+REGISTRY="${GCP_REGISTRY}"
 KFCTL_DIR="${KFCTL_DIR}"
 WORK_DIR=$(mktemp -d)
 VERSION=$(git describe --tags --always --dirty)
@@ -57,9 +58,14 @@ ks generate chainer-operator chainer-operator --image=${REGISTRY}/${REPO_NAME}:$
 ks apply default -c chainer-operator
 TIMEOUT=30
 until kubectl get pods -n ${K8S_NAMESPACE} | grep chainer-operator | grep 1/1 || [[ $TIMEOUT -eq 1 ]]; do
+  kubectl get pods -n ${K8S_NAMESPACE}
   sleep 10
   TIMEOUT=$(( TIMEOUT - 1 ))
 done
+
+if [[ $TIMEOUT -eq 1 ]]; then
+ exit 1
+fi
 
 echo "Run 'ChainerJob' test"
 MNIST_TEST="chainer-mnist-test"
@@ -71,13 +77,14 @@ ks generate chainer-job-simple ${MNIST_TEST} \
 ks apply default -c ${MNIST_TEST}
 TIMEOUT=30
 until [[ $(kubectl -n ${K8S_NAMESPACE} get chj ${MNIST_TEST} -ojsonpath={.status.succeeded}) == 1 ]] || [[ $TIMEOUT -eq 1 ]] ; do
-  kubectl -n ${K8S_NAMESPACE} get all
+  kubectl -n ${K8S_NAMESPACE} get pods
   kubectl -n ${K8S_NAMESPACE} get chj ${MNIST_TEST}
   sleep 10
   TIMEOUT=$(( TIMEOUT - 1 ))
 done
-kubectl -n ${K8S_NAMESPACE} get all
-
+if [[ $TIMEOUT -eq 1 ]]; then
+ exit 1
+fi
 
 MN_MNIST_TEST_IMAGE="chainermn-mnist-test"
 ks generate chainer-job ${MN_MNIST_TEST_IMAGE} \
@@ -90,8 +97,11 @@ ks generate chainer-job ${MN_MNIST_TEST_IMAGE} \
 ks apply default -c ${MN_MNIST_TEST_IMAGE}
 TIMEOUT=30
 until [[ $(kubectl -n ${K8S_NAMESPACE} get chj ${MN_MNIST_TEST_IMAGE} -ojsonpath={.status.succeeded}) == 1 ]] || [[ $TIMEOUT -eq 1 ]] ; do
-  kubectl -n ${K8S_NAMESPACE} get all
+  kubectl -n ${K8S_NAMESPACE} get pods
   kubectl -n ${K8S_NAMESPACE} get chj ${MN_MNIST_TEST_IMAGE}
   sleep 10
   TIMEOUT=$(( TIMEOUT - 1 ))
 done
+if [[ $TIMEOUT -eq 1 ]]; then
+ exit 1
+fi
