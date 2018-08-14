@@ -40,4 +40,4 @@ cd ${CLUSTER_NAME}
 cat env.sh # for debugging
 
 kfctl::generate ${KFCTL_DIR} platform
-kfctl::apply ${KFCTL_DIR} apply
+kfctl::apply ${KFCTL_DIR} platform
