@@ -46,6 +46,8 @@ kfctl::init ${KFCTL_DIR} ${CLUSTER_NAME} ${PROJECT}
 
 cd ${CLUSTER_NAME}
 cat env.sh # for debugging
+export CLIENT_ID=dummy
+export CLIENT_SECRET=dummy
 kfctl::generate ${KFCTL_DIR} all
 
 cd $(source env.sh; echo ${KUBEFLOW_KS_DIR})
