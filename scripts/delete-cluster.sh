@@ -31,6 +31,9 @@ source `dirname $0`/kfctl-util.sh
 source `dirname $0`/gcloud-util.sh
 
 gcloud::auth_activate
+echo "Configuring kubectl"
+gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
+    --zone ${ZONE}
 
 cd ${WORK_DIR}
 
