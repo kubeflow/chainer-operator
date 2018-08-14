@@ -85,8 +85,8 @@
       // and if we cut the prefix we might end up starting with "-" or other invalid
       // character for first character.
       local cluster =
-        if std.length(name) > 40 then
-          "z" + std.substr(name, std.length(name) - 39, 39)
+        if std.length(name) > 20 then
+          "z" + std.substr(name, std.length(name) - 19, 19)
         else
           name;
       local zone = params.zone;
