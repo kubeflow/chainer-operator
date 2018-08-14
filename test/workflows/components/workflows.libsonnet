@@ -270,7 +270,7 @@
               "scripts/create-cluster.sh",
             ]),  // setup cluster
             $.parts(namespace, name).e2e(prow_env, bucket).buildTemplate("run-tests", testWorkerImage, [
-              "scripts/run-tests.sh",
+              "scripts/run-test.sh",
             ]),  // run tests
             $.parts(namespace, name).e2e(prow_env, bucket).buildTemplate("create-pr-symlink", testWorkerImage, [
               "python",
