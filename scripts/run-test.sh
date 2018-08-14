@@ -56,7 +56,7 @@ ks pkg install kubeflow/chainer-job
 ks generate chainer-operator chainer-operator --image=${REGISTRY}/${REPO_NAME}:${VERSION}
 ks apply default -c chainer-operator
 TIMEOUT=30
-until kubectl get pods -n ${NAMESPACE} | grep chainer-operator | grep 1/1 || [[ $TIMEOUT -eq 1 ]]; do
+until kubectl get pods -n ${K8S_NAMESPACE} | grep chainer-operator | grep 1/1 || [[ $TIMEOUT -eq 1 ]]; do
   sleep 10
   TIMEOUT=$(( TIMEOUT - 1 ))
 done
@@ -68,9 +68,9 @@ ks generate chainer-job-simple ${MNIST_TEST} \
   --gpus=0 \
   --command=python3 \
   --args='/train_mnist.py,-e,2,-b,1000,-u,100,--noplot'
-ks apply ${KF_ENV} -c ${MNIST_TEST}
+ks apply default -c ${MNIST_TEST}
 TIMEOUT=30
-until [[ $(kubectl -n ${NAMESPACE} get chj ${MNIST_TEST} -ojsonpath={.status.succeeded}) == 1 ]] ; do
+until [[ $(kubectl -n ${K8S_NAMESPACE} get chj ${MNIST_TEST} -ojsonpath={.status.succeeded}) == 1 ]] ; do
   sleep 10
   TIMEOUT=$(( TIMEOUT - 1 ))
 done
@@ -84,9 +84,9 @@ ks generate chainer-job ${MN_MNIST_TEST_IMAGE} \
   --gpus=0 \
   --command=python3 \
   --args='/train_mnist.py,-e,2,-b,1000,-u,100'
-ks apply ${KF_ENV} -c ${MN_MNIST_TEST_IMAGE}
+ks apply default -c ${MN_MNIST_TEST_IMAGE}
 TIMEOUT=30
-until [[ $(kubectl -n ${NAMESPACE} get chj ${MN_MNIST_TEST_IMAGE} -ojsonpath={.status.succeeded}) == 1 ]] ; do
+until [[ $(kubectl -n ${K8S_NAMESPACE} get chj ${MN_MNIST_TEST_IMAGE} -ojsonpath={.status.succeeded}) == 1 ]] ; do
   sleep 10
   TIMEOUT=$(( TIMEOUT - 1 ))
 done
