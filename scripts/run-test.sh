@@ -70,10 +70,13 @@ ks generate chainer-job-simple ${MNIST_TEST} \
   --args='/train_mnist.py,-e,2,-b,1000,-u,100,--noplot'
 ks apply default -c ${MNIST_TEST}
 TIMEOUT=30
-until [[ $(kubectl -n ${K8S_NAMESPACE} get chj ${MNIST_TEST} -ojsonpath={.status.succeeded}) == 1 ]] ; do
+until [[ $(kubectl -n ${K8S_NAMESPACE} get chj ${MNIST_TEST} -ojsonpath={.status.succeeded}) == 1 ]] || [[ $TIMEOUT -eq 1 ]] ; do
+  kubectl -n ${K8S_NAMESPACE} get all
+  kubectl -n ${K8S_NAMESPACE} get chj ${MNIST_TEST}
   sleep 10
   TIMEOUT=$(( TIMEOUT - 1 ))
 done
+kubectl -n ${K8S_NAMESPACE} get all
 
 
 MN_MNIST_TEST_IMAGE="chainermn-mnist-test"
@@ -86,7 +89,9 @@ ks generate chainer-job ${MN_MNIST_TEST_IMAGE} \
   --args='/train_mnist.py,-e,2,-b,1000,-u,100'
 ks apply default -c ${MN_MNIST_TEST_IMAGE}
 TIMEOUT=30
-until [[ $(kubectl -n ${K8S_NAMESPACE} get chj ${MN_MNIST_TEST_IMAGE} -ojsonpath={.status.succeeded}) == 1 ]] ; do
+until [[ $(kubectl -n ${K8S_NAMESPACE} get chj ${MN_MNIST_TEST_IMAGE} -ojsonpath={.status.succeeded}) == 1 ]] || [[ $TIMEOUT -eq 1 ]] ; do
+  kubectl -n ${K8S_NAMESPACE} get all
+  kubectl -n ${K8S_NAMESPACE} get chj ${MN_MNIST_TEST_IMAGE}
   sleep 10
   TIMEOUT=$(( TIMEOUT - 1 ))
 done
