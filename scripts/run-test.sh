@@ -32,6 +32,13 @@ source `dirname $0`/kfctl-util.sh
 source `dirname $0`/gcloud-util.sh
 
 gcloud::auth_activate
+echo "Configuring kubectl"
+gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
+    --zone ${ZONE}
+
+ACCOUNT=`gcloud config get-value account --quiet`
+echo "Setting account ${ACCOUNT}"
+kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=${ACCOUNT}
 
 cd ${WORK_DIR}
 

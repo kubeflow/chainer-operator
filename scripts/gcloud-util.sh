@@ -18,5 +18,4 @@ function gcloud::auth_activate(){
     echo "Activating service-account"
     gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
     gcloud version
-    # gcloud components update -q
 }
