@@ -36,10 +36,6 @@ echo "Configuring kubectl"
 gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
     --zone ${ZONE}
 
-ACCOUNT=`gcloud config get-value account --quiet`
-echo "Setting account ${ACCOUNT}"
-kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=${ACCOUNT}
-
 cd ${WORK_DIR}
 
 kfctl::init ${KFCTL_DIR} ${CLUSTER_NAME} ${PROJECT}
