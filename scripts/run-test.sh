@@ -21,11 +21,11 @@
 set -xe
 set -o pipefail
 
-CLUSTER_NAME="${CLUSTER_NAME}"
-ZONE="${GCP_ZONE}"
-PROJECT="${GCP_PROJECT}"
-K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
-REGISTRY="${GCP_REGISTRY}"
+export CLUSTER_NAME="${CLUSTER_NAME}"
+export ZONE="${GCP_ZONE}"
+export PROJECT="${GCP_PROJECT}"
+export K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
+export REGISTRY="${GCP_REGISTRY}"
 KFCTL_DIR="${KFCTL_DIR}"
 WORK_DIR=$(mktemp -d)
 VERSION=$(git describe --tags --always --dirty)

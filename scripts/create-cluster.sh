@@ -21,10 +21,10 @@
 set -xe
 set -o pipefail
 
-CLUSTER_NAME="${CLUSTER_NAME}"
-ZONE="${GCP_ZONE}"
-PROJECT="${GCP_PROJECT}"
-K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
+export CLUSTER_NAME="${CLUSTER_NAME}"
+export ZONE="${GCP_ZONE}"
+export PROJECT="${GCP_PROJECT}"
+export K8S_NAMESPACE="${DEPLOY_NAMESPACE}"
 KFCTL_DIR=${KFCTL_DIR}
 WORK_DIR=$(mktemp -d)
 source `dirname $0`/kfctl-util.sh
