@@ -2,7 +2,7 @@
 # see kubeflow/testing/py/run_e2e_workflow.py
 workflows:
   - app_dir: kubeflow/chainer-operator/test/workflows
-    component: workflows
+    component: e2e
     # chainer-e2e will cause error
     #   metadata.labels: Invalid value: "kubeflow-chainer-operator-presubmit-chainer-e2e-19-eecf46c-37-b1c9": must be no more than 63 characters
     name: chainer
