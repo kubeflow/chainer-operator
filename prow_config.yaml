@@ -3,4 +3,4 @@
 workflows:
   - app_dir: kubeflow/chainer-operator/test/workflows
     component: workflows
-    name: e2e
+    name: chainer-e2e
