@@ -52,6 +52,9 @@ cd $(source env.sh; echo ${KUBEFLOW_KS_DIR})
 # kfctl.sh generate remove default env
 ks env add default --namespace "${K8S_NAMESPACE}" 
 
+echo "Disable spartakus"
+ks param set spartakus reportUsage false
+
 echo "Install the operator"
 ks pkg install kubeflow/chainer-job
 ks generate chainer-operator chainer-operator --image=${REGISTRY}/${REPO_NAME}:${VERSION}
