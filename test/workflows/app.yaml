@@ -7,6 +7,13 @@ environments:
     k8sVersion: v1.7.0
     path: test
 kind: ksonnet.io/app
+libraries:
+  automation:
+    gitVersion:
+      commitSha: b51849915f7f227ada6f6e3ee4bc9ab2f06cc270
+      refSpec: master
+    name: automation
+    registry: kubeflow
 name: workflows
 registries:
   incubator:
@@ -15,4 +22,10 @@ registries:
       refSpec: master
     protocol: github
     uri: github.com/ksonnet/parts/tree/master/incubator
+  kubeflow:
+    gitVersion:
+      commitSha: b51849915f7f227ada6f6e3ee4bc9ab2f06cc270
+      refSpec: master
+    protocol: github
+    uri: github.com/kubeflow/kubeflow/tree/master/kubeflow
 version: 0.0.1
