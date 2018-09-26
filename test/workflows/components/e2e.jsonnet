@@ -277,4 +277,9 @@ local workflow = {
   },
 };
 
-std.prune(k.core.v1.list.new([workflow]))
+local release = import "kubeflow/automation/release.libsonnet";
+
+std.prune(k.core.v1.list.new([
+  workflow,
+  release.parts(params.namespace, std.strReplace(params.name, "e2e", "rl"), overrides=params).release
+]))
