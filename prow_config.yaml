@@ -10,7 +10,7 @@ workflows:
     params:
       registry: "gcr.io/kubeflow-ci"
   - app_dir: kubeflow/chainer-operator/test/workflows
-    component: rl
+    component: e2e
   # this super-short names are required so that identity lengths will be shorter than 64
     name: chr
     job_types:
