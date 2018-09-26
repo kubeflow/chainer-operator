@@ -6,7 +6,12 @@
   components: {
     // Component-level parameters, defined initially from 'ks prototype use ...'
     // Each object below should correspond to a component in the components/ directory
-    e2e:{},
+    e2e: {
+      name: "",
+      namespace: "",
+      prow_env: "",
+      bucket: "",
+    },
     release: {
       bucket: "kubeflow-releasing-artifacts",
       cluster: "kubeflow-releasing",
