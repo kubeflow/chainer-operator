@@ -31,7 +31,8 @@ function kfctl::init(){
     echo "Initializing kfctl"
     ${kfctl_dir}/scripts/kfctl.sh init ${deploy_name} \
       --platform gcp \
-      --project ${gcp_project}
+      --project ${gcp_project} \
+      --skipInitProject ${gcp_project}
 }
 
 function kfctl::generate(){

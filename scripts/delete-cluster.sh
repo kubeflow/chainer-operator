@@ -31,6 +31,9 @@ source `dirname $0`/kfctl-util.sh
 source `dirname $0`/gcloud-util.sh
 
 gcloud::auth_activate
+echo "Configuring kubectl"
+gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
+    --zone ${ZONE}
 
 cd ${WORK_DIR}
 
@@ -41,5 +44,5 @@ cat env.sh # for debugging
 
 export CLIENT_ID=dummy
 export CLIENT_SECRET=dummy
-kfctl::generate ${KFCTL_DIR} platform
+kfctl::generate ${KFCTL_DIR} all
 kfctl::delete ${KFCTL_DIR} platform
