@@ -8,7 +8,15 @@ workflows:
     name: chainer
     job_types:
       - presubmit
-  # The postsubmit run publishes the docker images to gcr.io/kubeflow-images-public      
+  # checking "release" component does work
+  - app_dir: kubeflow/chainer-operator/test/workflows
+    component: release
+    name: chainer-e2e
+    job_types:
+      - presubmit
+      # The postsubmit run publishes the docker images to gcr.io/kubeflow-images-public      
+    params:
+      registry: "gcr.io/kubeflow-ci"
   - app_dir: kubeflow/hainer-operator/test/workflows
     component: release
     # chainer-publish will cause error
