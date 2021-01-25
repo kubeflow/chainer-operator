@@ -1,0 +1,35 @@
+updates:
+- assignees:
+  - everpeace
+  - disktnk
+  - jlewi
+  directory: .
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - gaocegege
+  schedule:
+    interval: daily
+- assignees:
+  - everpeace
+  - disktnk
+  - jlewi
+  directory: examples/docker/chainermn
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - gaocegege
+  schedule:
+    interval: daily
+- assignees:
+  - everpeace
+  - disktnk
+  - jlewi
+  directory: examples/docker/chainer
+  open-pull-requests-limit: 10
+  package-ecosystem: docker
+  reviewers:
+  - gaocegege
+  schedule:
+    interval: daily
+version: 2
