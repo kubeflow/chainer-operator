@@ -1,3 +1,7 @@
+## :warning: **kubeflow/chainer-operator is not maintained**
+
+This repository has been deprecated, and will be archived soon (Nov 30th, 2021). Please consider to user [normal Jobs](https://kubernetes.io/docs/tasks/job/) for non-distributed cases and [kubeflow/mpi-controller](https://github.com/kubeflow/mpi-operator) for distributed cases.
+
 # K8s Custom Resource and Operator For Chainer/ChainerMN jobs
 
 __Experimental repo notice: This repository is experimental and currently only serves as a proof of concept for running distributed training with Chainer/ChainerMN on Kubernetes.__
